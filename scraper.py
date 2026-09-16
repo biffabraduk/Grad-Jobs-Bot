@@ -1,3 +1,4 @@
+import time
 import os
 import json
 from datetime import datetime
@@ -77,10 +78,12 @@ def tailor_document(template_path, job_description, company):
     - Return ONLY the clean, final text in Markdown format.
     """
     
-    # A robust list of standard fallback models to try if the API is busy
+    # A robust list of the latest 2026 models
     models_to_try = [
-        'gemini-3.5-flash',
+        'gemini-3.8-flash',
+        'gemini-3.7-flash',
         'gemini-3.6-flash',
+        'gemini-3.5-flash'
     ]
     
     for model_name in models_to_try:
@@ -91,9 +94,10 @@ def tailor_document(template_path, job_description, company):
             )
             return response.text.replace("```markdown", "").replace("```", "").strip()
         except Exception as e:
-            print(f"Warning: {model_name} failed ({e}). Falling back to next model...")
+            print(f"Warning: {model_name} failed ({e}). Taking a breath before retrying...")
+            # Pause for 3 seconds to let the Google server clear the traffic spike
+            time.sleep(3)
             
-    # If the server is totally down, return the raw template so the pipeline still emails you
     print("Error: All models are currently overloaded. Returning original template.")
     return template_content
 
