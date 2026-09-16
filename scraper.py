@@ -78,9 +78,6 @@ def tailor_document(template_path, job_description, company):
     # A robust list of standard fallback models to try if the API is busy
     models_to_try = [
         'gemini-3.5-flash',
-        'gemini-2.0-flash',
-        'gemini-3.1-pro',
-        'gemini-2.0-pro'
         'gemini-3.6-flash',
     ]
     
