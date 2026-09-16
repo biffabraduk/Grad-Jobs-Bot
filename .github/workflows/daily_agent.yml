@@ -20,7 +20,8 @@ jobs:
         run: |
           pip install playwright markdown2 pdfkit
           playwright install chromium
-          sudo apt-get install wkhtmltopdf
+          sudo apt-get update
+          sudo apt-get install -y wkhtmltopdf
 
       - name: Execute Scraper and Dispatch
         env:
