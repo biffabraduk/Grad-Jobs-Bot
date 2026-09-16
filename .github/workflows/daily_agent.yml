@@ -20,7 +20,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install playwright markdown2 pdfkit google-generativeai
+          pip install playwright markdown2 pdfkit google-genai
           playwright install chromium
           sudo apt-get update
           sudo apt-get install -y wkhtmltopdf
