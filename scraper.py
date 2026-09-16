@@ -78,28 +78,30 @@ def tailor_document(template_path, job_description, company):
     - Return ONLY the clean, final text in Markdown format.
     """
     
-    # A robust list of the latest 2026 models
     models_to_try = [
         'gemini-3.8-flash',
         'gemini-3.7-flash',
         'gemini-3.6-flash',
-        'gemini-3.5-flash'
+        'gemini-3.5-flash',
+        'gemini-3.1-pro'
     ]
     
     for model_name in models_to_try:
-        try:
-            response = client.models.generate_content(
-                model=model_name,
-                contents=prompt
-            )
-            return response.text.replace("```markdown", "").replace("```", "").strip()
-        except Exception as e:
-            print(f"Warning: {model_name} failed ({e}). Taking a breath before retrying...")
-            # Pause for 3 seconds to let the Google server clear the traffic spike
-            time.sleep(3)
-            
-    print("Error: All models are currently overloaded. Returning original template.")
-    return template_content
+        # Try each model up to 2 times with an increasing delay
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(
+                    model=model_name,
+                    contents=prompt
+                )
+                return response.text.replace("```markdown", "").replace("```", "").strip()
+            except Exception as e:
+                print(f"Warning: {model_name} attempt {attempt+1} failed ({e}). Retrying...")
+                time.sleep(4 * (attempt + 1)) # Wait 4s, then 8s before moving on
+                
+    # FAIL-SAFE: If the API is completely overwhelmed, raise an error 
+    # so we don't accidentally send a broken/untailored CV.
+    raise RuntimeError(f"Critical: All Gemini models are currently overloaded for {company}. Skipping dispatch to protect document quality.")
 
 def scrape_new_jobs():
     seen_urls = load_ledger()
