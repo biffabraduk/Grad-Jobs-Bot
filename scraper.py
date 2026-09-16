@@ -1,7 +1,7 @@
 import os
 import json
 from datetime import datetime
-import google import genai
+from google import genai
 from playwright.sync_api import sync_playwright
 from dispatch import dispatch_application
 
