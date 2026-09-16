@@ -57,7 +57,6 @@ def extract_direct_application_url(desc_page, target_url):
     return target_url
 
 def tailor_document(template_path, job_description, company):
-    """Feeds the template and job description to Gemini to rewrite the bracketed sections."""
     with open(template_path, 'r') as file:
         template_content = file.read()
         
@@ -75,11 +74,29 @@ def tailor_document(template_path, job_description, company):
     - IMPORTANT: You must completely delete the square brackets `[` and `]` from your final output so the tailored text blends seamlessly into the document. Do not leave any brackets behind.
     - Return ONLY the clean, final text in Markdown format.
     """
-    response = client.models.generate_content(
-        model='gemini-3.5-flash',
-        contents=prompt
-    )
-    return response.text.replace("```markdown", "").replace("```", "").strip()
+    
+    # A robust list of standard fallback models to try if the API is busy
+    models_to_try = [
+        'gemini-3.5-flash',
+        'gemini-2.0-flash',
+        'gemini-3.1-pro',
+        'gemini-2.0-pro'
+        'gemini-3.6-flash',
+    ]
+    
+    for model_name in models_to_try:
+        try:
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt
+            )
+            return response.text.replace("```markdown", "").replace("```", "").strip()
+        except Exception as e:
+            print(f"Warning: {model_name} failed ({e}). Falling back to next model...")
+            
+    # If the server is totally down, return the raw template so the pipeline still emails you
+    print("Error: All models are currently overloaded. Returning original template.")
+    return template_content
 
 def scrape_new_jobs():
     seen_urls = load_ledger()
