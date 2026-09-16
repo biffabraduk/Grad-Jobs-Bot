@@ -1,13 +1,12 @@
 import os
 import json
 from datetime import datetime
-import google.generativeai as genai
+import google import genai
 from playwright.sync_api import sync_playwright
 from dispatch import dispatch_application
 
 # Setup Gemini AI
-genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
-model = genai.GenerativeModel('gemini-1.5-flash')
+client = genai.Client(api_key=os.environ.get('GEMINI_API_KEY'))
 
 LEDGER_FILE = 'seen_jobs.json'
 TRACKR_URL = 'https://app.the-trackr.com/uk-finance/graduate-programmes'
@@ -76,7 +75,10 @@ def tailor_document(template_path, job_description, company):
     - IMPORTANT: You must completely delete the square brackets `[` and `]` from your final output so the tailored text blends seamlessly into the document. Do not leave any brackets behind.
     - Return ONLY the clean, final text in Markdown format.
     """
-    response = model.generate_content(prompt)
+    response = client.models.generate_content(
+        model='gemini-1.5-flash',
+        contents=prompt
+    )
     return response.text.replace("```markdown", "").replace("```", "").strip()
 
 def scrape_new_jobs():
