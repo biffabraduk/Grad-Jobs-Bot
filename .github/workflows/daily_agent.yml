@@ -20,7 +20,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install playwright markdown2 pdfkit
+          pip install playwright markdown2 pdfkit google-generativeai
           playwright install chromium
           sudo apt-get update
           sudo apt-get install -y wkhtmltopdf
@@ -28,7 +28,8 @@ jobs:
       - name: Execute Scraper and Dispatch
         env:
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
-        run: python scraper.py # Assuming your scraper calls the dispatch function
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python scraper.py
 
       - name: Save Updated Ledger
         run: |
