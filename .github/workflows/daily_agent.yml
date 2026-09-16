@@ -1,0 +1,36 @@
+name: Daily Job Agent
+on:
+  schedule:
+    - cron: '0 7 * * *' # Runs at 7:00 AM UTC (8:00 AM UK time) every day
+  workflow_dispatch: # Allows you to run it manually from GitHub
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install playwright markdown2 pdfkit
+          playwright install chromium
+          sudo apt-get install wkhtmltopdf
+
+      - name: Execute Scraper and Dispatch
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: python scraper.py # Assuming your scraper calls the dispatch function
+
+      - name: Save Updated Ledger
+        run: |
+          git config --global user.name 'GitHub Action Bot'
+          git config --global user.email 'action@github.com'
+          git add seen_jobs.json
+          git commit -m "Update seen jobs ledger" || exit 0
+          git push
