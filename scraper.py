@@ -72,6 +72,8 @@ def tailor_document(template_path, job_description, company):
     - Rewrite ONLY the text contained within the square brackets [...] to align with the role.
     - DO NOT alter, add, or remove a single character outside the brackets.
     - IMPORTANT: You must completely delete the square brackets `[` and `]` from your final output so the tailored text blends seamlessly into the document. Do not leave any brackets behind.
+    - CRITICAL FORMATTING: Ensure all Markdown bold tags are properly closed! If you are replacing text inside `**[Title]**`, you MUST output `**New Title**` with both sets of asterisks intact.
+    - LOCALE: You must strictly use British English spelling, phrasing, and terminology (e.g., 'optimise', 'programme', 'analysed').
     - Return ONLY the clean, final text in Markdown format.
     """
     
