@@ -76,7 +76,7 @@ def tailor_document(template_path, job_description, company):
     - Return ONLY the clean, final text in Markdown format.
     """
     response = client.models.generate_content(
-        model='gemini-1.5-flash',
+        model='gemini-3.5-flash',
         contents=prompt
     )
     return response.text.replace("```markdown", "").replace("```", "").strip()
